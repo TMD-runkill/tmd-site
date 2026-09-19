@@ -1,0 +1,22 @@
+[
+  {
+    "key": "afk",
+    "name": "TMD 全自動掛機",
+    "repo": "TMD-runkill/tmd-afk-releases",
+    "files": {
+      "exe": "TMD_Runner.exe",
+      "config": "config.json"
+    },
+    "backup_url": null
+  },
+  {
+    "key": "run",
+    "name": "TMD 跑殺",
+    "repo": "TMD-runkill/tmd-run-releases",
+    "files": {
+      "exe": "TMD-RunKill.exe",
+      "config": "config.json"
+    },
+    "backup_url": null
+  }
+]

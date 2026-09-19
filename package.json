@@ -1,0 +1,10 @@
+{
+  "name": "tmd-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes netlify-cli dev",
+    "preview": "node scripts/preview.mjs",
+    "test": "node scripts/test-functions.mjs"
+  }
+}
