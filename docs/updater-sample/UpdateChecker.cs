@@ -13,19 +13,27 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 public static class UpdateChecker
 {
     private const string SiteUrl = "https://tmd-run.netlify.app";
+
+    // 逾時設長是為了下載大檔的 zip；查版本另外用 5 秒的 CancellationToken 限制，
+    // 避免網站沒回應時卡住程式啟動。
     private static readonly HttpClient Http = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
 
     public static async Task CheckAndPromptAsync(string product)
     {
         try
         {
-            var json = await Http.GetStringAsync($"{SiteUrl}/api/latest?product={product}");
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var apiRes = await Http.GetAsync($"{SiteUrl}/api/latest?product={product}", cts.Token);
+            apiRes.EnsureSuccessStatusCode();
+            var json = await apiRes.Content.ReadAsStringAsync();
+
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
