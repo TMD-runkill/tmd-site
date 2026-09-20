@@ -77,12 +77,12 @@
     }
 
     badge.className = 'badge badge-active';
-    badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> V' + esc(data.version);
+    badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> v' + esc(data.version);
 
     const files = data.files || [];
     body.innerHTML =
       '<div class="changelog">' +
-        '<div class="changelog-title"><i class="fa-solid fa-clock-rotate-left"></i> V' + esc(data.version) + ' 更新說明' +
+        '<div class="changelog-title"><i class="fa-solid fa-clock-rotate-left"></i> v' + esc(data.version) + ' 更新說明' +
           '<span class="changelog-date">' + esc(formatDate(data.published_at)) + '</span></div>' +
         '<ul>' + notesToHtml(data.notes) + '</ul>' +
       '</div>' +
