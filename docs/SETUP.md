@@ -30,17 +30,19 @@ WinForms 程式 ─┘                          │ 帶 GITHUB_TOKEN
 4. 「Add organization members」那頁輸入另一位管理者的帳號送出邀請，對方到 GitHub 通知或信箱接受。
 5. 組織首頁 → **People** → 找到對方 → 右邊 **Member** 改成 **Owner**。兩人權限相同，任何一人都能管 repo、成員與設定。
 
-## 第 2 步：建立 repo（3 個，全部私人）
+## 第 2 步：建立 repo（3 個：網站公開，兩個 release repo 私人）
 
 到 https://github.com/new，**Owner 下拉選單改選 `tmd-team`**，依序建立：
 
 | Repo 名稱 | 用途 | 設定 |
 |---|---|---|
-| `tmd-site` | 網站程式碼（本資料夾） | Private，不勾 README |
+| `tmd-site` | 網站程式碼（本資料夾） | **Public**，不勾 README |
 | `tmd-afk-releases` | 「全自動掛機」的 Release 檔案 | Private，**勾選 Add a README**（repo 不能是空的） |
 | `tmd-run-releases` | 「跑殺」的 Release 檔案 | Private，**勾選 Add a README** |
 
 建好後網址會是 `github.com/tmd-team/tmd-site` 等。
+
+`tmd-site` 必須公開：Netlify 免費方案不能連結「組織底下的私人 repo」，要連的話得升級 Pro（每月 20 美元）。公開沒有風險，這個 repo 裡只有網頁和函式程式碼，token 放在 Netlify 環境變數，exe 放在另外兩個私人 repo，都不會進到 `tmd-site`。`.gitignore` 已排除 `.env`，本機測試的 token 不會被 commit。
 
 ## 第 3 步：建立 GitHub token
 
@@ -76,21 +78,24 @@ token 是建立者個人的。建立者離開組織，token 就失效。換 toke
 
 ## 第 5 步：Netlify 接上 GitHub 並設定 token
 
-1. 登入 https://app.netlify.com，點進現有的 **tmd-run** 站台。
-2. **Site configuration** → **Build & deploy** → **Continuous deployment** → **Link repository**（或 Link to Git）→ 選 GitHub。
-   - 授權畫面會問要給哪個帳號或組織的存取權，**選 `tmd-team`**，Repository access 選 `tmd-site` 即可。
-   - 回到 Netlify 選 `tmd-team/tmd-site`。
-   - Branch：`main`
-   - Build command：留空
-   - Publish directory：`public`
-   - Functions directory：`netlify/functions`
-   （`netlify.toml` 已經寫好這些，Netlify 會自動讀。）
-3. **Site configuration** → **Environment variables** → **Add a variable**：
+Netlify 現在把站台叫做 **Project**，以下用新版介面的名稱。舊版介面對應的是 Site configuration → Build & deploy，位置相同。
+
+1. 登入 https://app.netlify.com，在 Projects 列表點進現有的 **tmd-run**。
+2. 左側 **Project configuration** → **Developer settings** → **Continuous deployment** → **Repository** 區塊 → **Link repository**。
+3. 選 **GitHub**，會跳到 GitHub 安裝 Netlify App 的畫面：
+   - 先選要安裝到哪裡：**選 `tmd-team`** 組織，不要選個人帳號。
+   - Repository access 選 **Only select repositories**，勾 `tmd-site`，按 Install。
+   - 回到 Netlify，repo 列表選 `tmd-team/tmd-site`。
+   - 如果列表裡找不到組織或 repo，點 **Configure Netlify on GitHub**，在 GitHub 那頁把 `tmd-team` 加進去或補勾 `tmd-site`。
+4. 連結後不用改 Build settings。`netlify.toml` 已寫好 publish 目錄和函式目錄，設定檔的優先權高於介面。若想確認，在同一頁的 **Build settings** 區塊看到 Publish directory 是 `public` 即可；Functions directory 不會出現在介面上，這是正常的。
+5. 左側 **Project configuration** → **Environment variables** → **Add a variable** → **Add a single variable**：
    - Key：`GITHUB_TOKEN`
-   - Value：第 3 步的 token
-   - Scopes：全部
-4. **Deploys** → **Trigger deploy** → **Deploy site**。等 1 分鐘變成綠色 Published。
-5. 打開 https://tmd-run.netlify.app/api/latest 應該看到兩個產品都是 `"status":"building"`。這代表函式和 token 都正常，只是還沒發版。
+   - Scopes：**All scopes**
+   - Values：**Same value for all deploy contexts**，Value 貼上第 3 步的 token
+   - 若有 **Contains secret values** 勾選框就勾起來
+   - **Create variable**
+6. 環境變數改了要重新部署才生效：左側 **Deploys** → 部署列表上方 **Trigger deploy** → 選 **Deploy project**（舊版叫 Deploy site）。等 1 分鐘變成綠色 Published。
+7. 打開 https://tmd-run.netlify.app/api/latest 應該看到兩個產品都是 `"status":"building"`。這代表函式和 token 都正常，只是還沒發版。
 
 Netlify 免費方案一個團隊只有一個成員，所以 Netlify 只能由一人登入。日常維護不需要碰 Netlify，push 到 GitHub 就自動部署；只有換 token 和看部署紀錄需要登入。
 
@@ -123,7 +128,7 @@ Netlify 免費方案一個團隊只有一個成員，所以 Netlify 只能由一
 
 **新增產品：** 在組織下建一個新的 release repo，`products.json` 加一筆，`public/index.html` 複製一個 `<article class="product" data-product="...">` 卡片改名字，push。新 repo 也要加進 token 的 Repository access，否則會一直顯示建置中。
 
-**更換 token（每年一次）：** 任一位 Owner 重做第 3 步，請 Netlify 帳號持有人到環境變數更新 `GITHUB_TOKEN` 的值，再 Trigger deploy。
+**更換 token（每年一次）：** 任一位 Owner 重做第 3 步，請 Netlify 帳號持有人到 **Project configuration → Environment variables** 點 `GITHUB_TOKEN` → **Options → Edit** 換成新值，再到 **Deploys → Trigger deploy → Deploy project**。
 
 **加人或移除人：** 組織首頁 → **People** → Invite member / Remove。不用逐個 repo 設定。
 
