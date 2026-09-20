@@ -29,8 +29,7 @@
   }
 
   const FILE_META = {
-    exe: { icon: 'fa-box-archive', title: '主程式', desc: '完整程式，首次安裝或更新皆下載此檔' },
-    config: { icon: 'fa-sliders', title: '設定檔', desc: '預設設定，與主程式放同一資料夾' },
+    zip: { icon: 'fa-file-zipper', title: '完整包', desc: '解壓縮後執行主程式' },
   };
 
   function fileRow(f) {

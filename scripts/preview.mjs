@@ -15,8 +15,7 @@ const MOCK = [
     published_at: '2026-09-18T10:00:00Z',
     notes: '- 修正登入逾時問題\n- 優化長時間掛機穩定度\n- 新增自動重連',
     files: [
-      { kind: 'exe', name: 'TMD-AutoAFK.exe', url: '/download/afk/exe', size: 3145728, sha256: 'abc' },
-      { kind: 'config', name: 'config.json', url: '/download/afk/config', size: 2048, sha256: 'def' },
+      { kind: 'zip', name: 'TMD_Runner.zip', url: '/download/afk/zip', size: 62914560, sha256: 'abc' },
     ],
     backup_url: 'https://drive.google.com/drive/folders/example',
   },

@@ -8,7 +8,7 @@
 使用者瀏覽器 ──> Netlify 網站 ──> /api/latest、/download/... (Netlify 函式)
 WinForms 程式 ─┘                          │ 帶 GITHUB_TOKEN
                                           ▼
-                       GitHub 組織底下的私人 repo 的 Releases（exe、config）
+                       GitHub 組織底下的私人 repo 的 Releases（一個 zip）
 ```
 
 所有 repo 放在一個 GitHub **組織（Organization）** 底下，兩位管理者都是 Owner，不綁在任何一個人的帳號上。
@@ -65,7 +65,7 @@ token 是建立者個人的。建立者離開組織，token 就失效。換 toke
    ```json
    "repo": "tmd-team/tmd-afk-releases"
    ```
-   如果 exe 的檔名不是 `TMD-AutoAFK.exe` / `TMD-Run.exe`，也在這裡改。**之後每次發版附上的檔名必須和這裡完全一樣。**
+   如果 zip 的檔名不是 `TMD_Runner.zip` / `TMD-RunKill.zip`，也在這裡改。**之後每次發版附上的檔名必須和這裡完全一樣。**
 2. 在本資料夾開終端機，上傳到 `tmd-site`：
    ```
    git init
@@ -112,7 +112,7 @@ Netlify 免費方案一個團隊只有一個成員，所以 Netlify 只能由一
    - 支援全自動登入、進房、掛機
    ```
    這段文字會直接顯示在網頁上。
-5. 把 **`TMD-AutoAFK.exe`** 和 **`config.json`** 拖到 Attach binaries 區塊，等上傳完成。
+5. 把 exe 和 `config.json` 壓成 **`TMD_Runner.zip`**（選取兩個檔案直接壓縮，zip 打開就是檔案，不要多包一層資料夾），拖到 Attach binaries 區塊，等上傳完成。
 6. 按 **Publish release**。
 7. 最多 60 秒後重新整理網頁，就會看到 V1.0.0 和下載按鈕。
 
@@ -142,6 +142,6 @@ Netlify 免費方案一個團隊只有一個成員，所以 Netlify 只能由一
 | 明明發了 Release，網頁還是「建置中」 | `products.json` 的 repo 名稱打錯，或 token 沒勾到那個 repo | 檢查 repo 名稱與 token 的 Repository access |
 | 建 token 時勾不到組織的 repo | Resource owner 選成個人帳號，或組織未允許 fine-grained token | 重做第 3 步，Resource owner 選組織；檢查組織的 Third-party Access 設定 |
 | token 突然失效但沒過期 | 建立 token 的人離開了組織 | 另一位 Owner 重做第 3 步 |
-| 網頁有版號，但少了下載按鈕 | 發版時附的檔名和 `products.json` 不一樣 | 到 Release 頁面刪掉附件重新上傳正確檔名 |
+| 網頁有版號，但少了下載按鈕 | 發版時附的 zip 檔名和 `products.json` 不一樣 | 到 Release 頁面刪掉附件重新上傳正確檔名 |
 | 剛發版但網頁沒變 | 60 秒快取 | 等一下再重新整理 |
-| 下載時瀏覽器警告 | exe 未簽章 | 正常，說明區已寫給使用者看 |
+| 解壓後執行時 Windows 警告 | exe 未簽章 | 正常，說明區已寫給使用者看 |

@@ -9,8 +9,7 @@ const RELEASE = {
   published_at: '2026-09-18T10:00:00Z',
   body: '- 修正登入逾時\n- 優化穩定度',
   assets: [
-    { id: 1, name: 'TMD-AutoAFK.exe', size: 3145728, digest: 'sha256:aaa', url: 'https://api.github.com/repos/o/tmd-afk-releases/releases/assets/1' },
-    { id: 2, name: 'config.json', size: 2048, digest: 'sha256:bbb', url: 'https://api.github.com/repos/o/tmd-afk-releases/releases/assets/2' },
+    { id: 1, name: 'TMD_Runner.zip', size: 62914560, digest: 'sha256:aaa', url: 'https://api.github.com/repos/o/tmd-afk-releases/releases/assets/1' },
   ],
 };
 
@@ -41,9 +40,9 @@ const download = (await import('../netlify/functions/download.mjs')).default;
   const afk = list.find((p) => p.product === 'afk');
   assert.equal(afk.status, 'released');
   assert.equal(afk.version, '1.2.0', 'tag 的 v 要去掉，更新器才能直接比大小');
-  assert.equal(afk.files.length, 2);
+  assert.equal(afk.files.length, 1, 'Release 只有一個 zip');
   assert.deepEqual(afk.files[0], {
-    kind: 'exe', name: 'TMD-AutoAFK.exe', url: 'https://tmd-run.netlify.app/download/afk/exe', size: 3145728, sha256: 'aaa',
+    kind: 'zip', name: 'TMD_Runner.zip', url: 'https://tmd-run.netlify.app/download/afk/zip', size: 62914560, sha256: 'aaa',
   });
   assert.equal(afk.files[0].url.includes('github'), false, '下載網址必須走本站，不能暴露 GitHub 網址');
 
@@ -67,9 +66,9 @@ const download = (await import('../netlify/functions/download.mjs')).default;
   assert.equal(res.status, 404);
 }
 
-// ---- /download/afk/exe → 302 到 GitHub 的暫時網址 ----
+// ---- /download/afk/zip → 302 到 GitHub 的暫時網址 ----
 {
-  const res = await download(new Request('https://tmd-run.netlify.app/download/afk/exe'), { params: { product: 'afk', kind: 'exe' } });
+  const res = await download(new Request('https://tmd-run.netlify.app/download/afk/zip'), { params: { product: 'afk', kind: 'zip' } });
   assert.equal(res.status, 302);
   assert.match(res.headers.get('location'), /^https:\/\/objects\.githubusercontent\.com\//);
   assert.equal(res.headers.get('cache-control'), 'no-store', '暫時網址會過期，不能被快取');
@@ -77,13 +76,13 @@ const download = (await import('../netlify/functions/download.mjs')).default;
 
 // ---- 沒有 Release 的產品不能下載 ----
 {
-  const res = await download(new Request('https://tmd-run.netlify.app/download/run/exe'), { params: { product: 'run', kind: 'exe' } });
+  const res = await download(new Request('https://tmd-run.netlify.app/download/run/zip'), { params: { product: 'run', kind: 'zip' } });
   assert.equal(res.status, 404);
 }
 
-// ---- 未知檔案類型 ----
+// ---- 未知檔案類型（exe 已不在 products.json 裡）----
 {
-  const res = await download(new Request('https://tmd-run.netlify.app/download/afk/zip'), { params: { product: 'afk', kind: 'zip' } });
+  const res = await download(new Request('https://tmd-run.netlify.app/download/afk/exe'), { params: { product: 'afk', kind: 'exe' } });
   assert.equal(res.status, 404);
 }
 
