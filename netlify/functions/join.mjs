@@ -13,7 +13,13 @@ export default async (req, context) => {
   const mc = String(b?.mc ?? '').toUpperCase();
   if (!CODE.test(mc)) return new Response('bad', { status: 400 });
 
-  const keys = Array.isArray(b.keys) ? b.keys.slice(0, 5).map(k => clean(String(k).replace('|', ' / '), 60)) : [];
+  // 自己的機器不記(使用者 11/14:自己 14 台會洗版)。用 Key 判斷、不用機器碼:
+  // 3A0B 這個機器碼 Qoo、餅乾、彥廷的虛擬機也在用,他們用自己的 Key,照樣要記。
+  const OWN_KEYS = ['3A0B-F29C-7215-DFE4|639255126806826717']; // TMD小猴 09/20 管理員 Key
+  const rawKeys = Array.isArray(b.keys) ? b.keys.map(k => String(k)) : [];
+  if (rawKeys.length > 0 && rawKeys.every(k => OWN_KEYS.includes(k))) return new Response('ok');
+
+  const keys = rawKeys.slice(0, 5).map(k => clean(k.replace('|', ' / '), 60));
   const ip = req.headers.get('x-nf-client-connection-ip') || context?.ip || '';
   const time = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
 
