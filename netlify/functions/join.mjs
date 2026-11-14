@@ -13,7 +13,7 @@ export default async (req, context) => {
   const mc = String(b?.mc ?? '').toUpperCase();
   if (!CODE.test(mc)) return new Response('bad', { status: 400 });
 
-  const keys = Array.isArray(b.keys) ? b.keys.slice(0, 5).map(k => clean(k, 60)) : [];
+  const keys = Array.isArray(b.keys) ? b.keys.slice(0, 5).map(k => clean(String(k).replace('|', ' / '), 60)) : [];
   const ip = req.headers.get('x-nf-client-connection-ip') || context?.ip || '';
   const time = new Date().toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false });
 
