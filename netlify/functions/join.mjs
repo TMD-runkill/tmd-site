@@ -1,7 +1,8 @@
 // POST /api/join — TMD 進房回報,轉貼到 Discord 私人頻道「進房紀錄」。
 // Webhook 網址放在 Netlify 環境變數 JOIN_WEBHOOK_URL,不寫在程式裡。
 const CODE = /^[0-9A-F]{4}(-[0-9A-F]{4}){3}$/;
-const clean = (v, max = 40) => String(v ?? '').replace(/[`@<>\r\n|*_~]/g, '').slice(0, max);
+// 冒號、括號也拿掉:防止有人在欄位裡塞假的「機器碼:」騙機器人
+const clean = (v, max = 40) => String(v ?? '').replace(/[`@<>\r\n|*_~:：\[\]()]/g, '').slice(0, max);
 
 export default async (req, context) => {
   if (req.method !== 'POST') return new Response('method', { status: 405 });
